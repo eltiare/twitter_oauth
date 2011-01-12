@@ -37,7 +37,14 @@ module TwitterOAuth
     end
   
     def show(username)
-      get("/users/show/#{username}.json")
+      if username.is_a?(String)
+        get("/users/show/#{username}.json")
+      elsif username.is_a?(Hash)
+        raise ArgumentError, "Valid options are screen_name and user_id" unless username.size == 0 && [:user_name, :screen_id].include?(username.keys[0].to_sym)
+        get("/users/show.json?#{username.keys[0]}=#{username.values[0]}")
+      else
+        raise ArgumentError, 'Argument must either be a string or a hash with either a screen_name or user_id label'
+      end
     end
     
     # Returns the string "ok" in the requested format with a 200 OK HTTP status code.
